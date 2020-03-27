@@ -7,7 +7,7 @@
         :collapse="isCollapse"
         :collapse-transition="false"
         :router="true"
-        background-color="transparent"
+        background-color="#333744"
         text-color="#fff"
         active-text-color="#ffd04b"
       >
@@ -15,58 +15,42 @@
           <i class="el-icon-s-promotion"></i>
           <span slot="title">首页</span>
         </el-menu-item>
-        <el-submenu index="2">
+        <el-submenu :index="item.path" v-for="item in menuList" :key="item.id">
           <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="title">商品管理</span>
+            <i :class="item.icon"></i>
+            <span slot="title">{{ item.title }}</span>
           </template>
-          <el-menu-item-group>
-            <el-menu-item index="/admin/goods">
-              <i class="el-icon-goods"></i>
-              <span slot="title">商品管理</span>
-            </el-menu-item>
-            <el-menu-item index="/admin/goods/bin">
-              <i class="el-icon-delete"></i>
-              <span slot="title">商品回收站</span>
-            </el-menu-item>
-          </el-menu-item-group>
+          <el-menu-item  :v-show="item.id == subitem.parent" :index="subitem.path" v-for="subitem in subMenus" :key="subitem.id">
+            <i :class="subitem.icon"></i>
+            <span slot="title">{{ subitem.title }}</span>
+          </el-menu-item>
         </el-submenu>
-        <el-submenu index="3">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="title">权限管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">
-              <i class="el-icon-user"></i>
-              <span slot="title">用户管理</span>
-            </el-menu-item>
-            <el-menu-item index="3-2">
-              <i class="el-icon-s-grid"></i>
-              <span slot="title">部门管理</span>
-            </el-menu-item>
-            <el-menu-item index="3-3">
-              <i class="el-icon-bell"></i>
-              <span slot="title">角色管理</span>
-            </el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-menu-item index="4">
-          <i class="el-icon-document"></i>
-          <span slot="title">消息管理</span>
-        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container class="container">
       <el-header>
-        <el-row :gutter="20">
-          <el-col :span="4">
+        <el-row>
+          <el-col :span="2">
             <el-button
               @click="toggleCollapse"
               :icon="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
             ></el-button>
+            <el-button type="text" icon="el-icon-refresh"></el-button>
           </el-col>
-          <el-col :span="20">s</el-col>
+          <el-col :span="2" :offset="20">
+            <i class="el-icon-bell"></i>
+            <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                admin
+                <i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>修改密码</el-dropdown-item>
+                <el-dropdown-item>退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-col>
         </el-row>
       </el-header>
       <el-main>
@@ -80,12 +64,23 @@
 export default {
   data() {
     return {
-      isCollapse: false
+      isCollapse: false,
+      menuList: [],
+      subMenus: []
     }
+  },
+  created() {
+    this.getMenus()
   },
   methods: {
     toggleCollapse() {
       this.isCollapse = !this.isCollapse
+    },
+    async getMenus() {
+      const { data: resM } = await this.$http.get('menus')
+      const { data: resS } = await this.$http.get('submenu')
+      this.menuList = resM.data
+      this.subMenus = resS.data
     }
   }
 }
