@@ -2,7 +2,7 @@
   <el-container>
     <el-aside :width="isCollapse ? '64px' : '200px'">
       <el-menu
-        default-active="$router.path"
+        :default-active="activePath"
         class="el-menu-vertical-demo"
         :collapse="isCollapse"
         :collapse-transition="false"
@@ -11,7 +11,7 @@
         text-color="#fff"
         active-text-color="#ffd04b"
       >
-        <el-menu-item index="/admin/welcome">
+        <el-menu-item index="/admin/welcome" @click="savaActivePath('/admin/welcome')">
           <i class="el-icon-s-promotion"></i>
           <span slot="title">首页</span>
         </el-menu-item>
@@ -20,7 +20,13 @@
             <i :class="item.icon"></i>
             <span slot="title">{{ item.title }}</span>
           </template>
-          <el-menu-item  :v-show="item.id == subitem.parent" :index="subitem.path" v-for="subitem in subMenus" :key="subitem.id">
+          <el-menu-item
+            :v-show="item.id == subitem.parent"
+            :index="subitem.path"
+            v-for="subitem in subMenus"
+            :key="subitem.id"
+            @click="savaActivePath(subitem.path)"
+          >
             <i :class="subitem.icon"></i>
             <span slot="title">{{ subitem.title }}</span>
           </el-menu-item>
@@ -47,7 +53,7 @@
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>修改密码</el-dropdown-item>
-                <el-dropdown-item>退出登录</el-dropdown-item>
+                <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-col>
@@ -64,6 +70,7 @@
 export default {
   data() {
     return {
+      activePath: '', // 解决页面刷新，高亮失效问题
       isCollapse: false,
       menuList: [],
       subMenus: []
@@ -71,6 +78,7 @@ export default {
   },
   created() {
     this.getMenus()
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     toggleCollapse() {
@@ -81,6 +89,14 @@ export default {
       const { data: resS } = await this.$http.get('submenu')
       this.menuList = resM.data
       this.subMenus = resS.data
+    },
+    savaActivePath(activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
+    },
+    // 退出登录
+    logout(){
+      this.$router.push('/admin')
     }
   }
 }
