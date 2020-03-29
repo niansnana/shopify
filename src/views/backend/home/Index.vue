@@ -41,7 +41,7 @@
               @click="toggleCollapse"
               :icon="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
             ></el-button>
-            <el-button type="text" icon="el-icon-refresh"></el-button>
+            <el-button type="text" icon="el-icon-refresh" title="刷新当前页面" @click="refreshCurrentPage"></el-button>
           </el-col>
           <el-col :span="2" :offset="20">
             <i class="el-icon-bell"></i>
@@ -93,6 +93,10 @@ export default {
     savaActivePath(activePath) {
       window.sessionStorage.setItem('activePath', activePath)
       this.activePath = activePath
+    },
+    // 刷新当然路由页面
+    refreshCurrentPage(){
+      this.$router.go(0)
     },
     // 退出登录
     logout(){

@@ -10,7 +10,7 @@
       <!-- 商品搜索 -->
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-input placeholder="请输入内容" v-model="keywords" clearable>
+          <el-input placeholder="请输入关键字查询" v-model="keywords" clearable @clear="getGoods">
             <el-button slot="append" icon="el-icon-search" title="搜索" @click="queryContent"></el-button>
           </el-input>
         </el-col>
@@ -280,13 +280,26 @@ export default {
       this.$message.success(res.msg)
     },
     // 模糊查询（失败...）
-    async queryContent() {
+    queryContent() {
       // this.goodsData.filter(goods => {
+      //   let arr = []
       //   if (goods.name.includes(this.keywords)) {
-      //     // console.log(goods)
-      //     return goods
+      //     arr.push(goods)
+      //     this.goodsData = arr
+      //     this.total= arr.length
       //   }
       // })
+      /**
+       * 
+       * 上面是第一种解决方法，含有严重bug（只能push一条数据）
+       * 不得不吐槽下，查阅那么多资料（垃圾某度），甚至都想从API上解决检索问题，
+       * 不曾想ele方法文档就提供了一种解决思路，还体贴的帮你把对象遍历归类到数组当中，可愁死了这两天。
+       * 蓦然回首，那人就在灯火阑珊处啊···
+       * 好了，继续解决下一个bug了（不能延续检索，必须清除一下才行，这个bug应该挺好解决的吧。。。）
+       */
+      let newGoodsData = this.goodsData.filter(data => !this.keywords || data.name.toLowerCase().includes(this.keywords.toLowerCase()))
+      this.goodsData = newGoodsData
+      this.total = newGoodsData.length
     },
     // 重置
     resetAddForm() {
