@@ -9,7 +9,7 @@
 (上段文字灵感来源于何帆《变量》)
 
 ## 界面预览
-<img src="./src/assets/image/goods.jpg" />
+![商品列表](https://cdn.jsdelivr.net/gh/niansnana/figurebed/blog/image/goods.jpg)
 
 已完成功能
 
@@ -25,6 +25,8 @@
 1. 运行项目
 
    ```sh
+   # 下载项目
+   git clone https://github.com/niansnana/shopify.git
    # 下载依赖包
    yarn install
    # 在线运行查看
@@ -48,8 +50,8 @@
      # 下载项目包
      git clone https://github.com/niansnana/shopifyAPI.git
      # 数据库
-     暂时不提供，你可以migration自动生成
-     # 运行接口项目
+     暂时不提供，你可以使用migration自动生成
+     # 运行项目接口
      php artisan serve
      ```
    - 具体调用方法
@@ -60,4 +62,4 @@
 
 这仅仅是练手项目，有许多瑕疵与槽点。
 
-专业写bug业余用户。
+专业写bug的业余用户。

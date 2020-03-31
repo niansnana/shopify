@@ -1,3 +1,9 @@
+<!--
+ * @Author: niansnana
+ * @Begin: 2020-03-25 14:29:15
+ * @Update: 2020-03-31 13:25:46
+ * @Update log: 移交请求，归类
+ -->
 <template>
   <div>
     <!-- 面包屑 -->
@@ -208,61 +214,55 @@ export default {
   },
   methods: {
     // 获取表单数据
-    async getGoods() {
-      const { data: res } = await this.$http.get('goods')
-      if (res.code !== 200) return this.$message.error('数据加载失败！')
-      this.goodsData = res.data
-      this.total = res.data.length
+    getGoods() {
+      this.$api.GoodsListFn().then(res => {
+        if (res.code !== 200) return this.$message.error('数据加载失败！')
+        this.goodsData = res.data
+        this.total = res.data.length
+      })
     },
     // 在线修改商品状态
-    async changeAdminStatus(goodsData) {
-      // console.log(goodsData)
-      const { data: res } = await this.$http.put(
-        `goods/${goodsData.id}?status=${goodsData.status}`
-      )
-      if (res.code !== 200) {
-        goodsData.status = !goodsData.status
-        this.$message.error(res.msg)
-      }
-      this.$message.success(res.msg)
+    changeAdminStatus(status) {
+      this.$api.GoodsUpdateFn(status.id, status).then(res => {
+        if (res.code !== 200) {
+          goodsData.status = !goodsData.status
+          this.$message.error(res.msg)
+        }
+        this.$message.success(res.msg)
+      })
     },
     // 创建商品
-    async createGoods() {
-      const { data: res } = await this.$http.post('goods', this.addGoods)
-      if (res.code !== 201) {
-        this.$message.error(res.msg)
-      }
-      this.$message.success(res.msg)
-      this.showAddGoodsDialog = false
-      this.getGoods()
+    createGoods() {
+      this.$api.GoodsCreateFn(this.addGoods).then(res => {
+        if (res.code !== 201) return this.$message.error(res.msg)
+        this.$message.success(res.msg)
+        this.showAddGoodsDialog = false
+        this.getGoods()
+      })
     },
-    // 查看指定商品
-    async showEditGoodsDialog(id) {
-      const { data: res } = await this.$http.get('goods/' + id)
-      if (res.code !== 201) {
-        this.$message.error('数据加载异常，请稍后再试···')
-      }
-      this.editGoodsData = res.data
-      this.editDialoVisible = true
+    showEditGoodsDialog(id) {
+      this.$api.GoodsDetailFn(id).then(res => {
+        if (res.code !== 201) return this.$message.error(res.msg)
+        this.editGoodsData = res.data
+        this.editDialoVisible = true
+      })
     },
     // 编辑指定商品
-    async editGoods() {
-      const { data: res } = await this.$http.put(
-        'goods/' + this.editGoodsData.id,
-        this.editGoodsData
-      )
-      if (res.code !== 200) {
-        this.$message.error('修改失败，没想到吧，哈哈···')
-      }
-      this.$message.success(res.msg)
-      this.editDialoVisible = false
-      this.getGoods()
+    editGoods() {
+      this.$api
+        .GoodsUpdateFn(this.editGoodsData.id, this.editGoodsData)
+        .then(res => {
+          if (res.code !== 200) return this.$message.error(res.msg)
+          this.$message.success(res.msg)
+          this.editDialoVisible = false
+          this.getGoods()
+        })
     },
     // 删除商品
     async deleteGoods(id) {
       const confirmResult = await this.$confirm(
-        '此操作讲永久删除该商品，是否继续？',
-        '删除信息',
+        '此操作将永久删除该商品，是否继续？',
+        '删除警告',
         {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -272,12 +272,11 @@ export default {
       if (confirmResult !== 'confirm') {
         return this.$message.info('取消成功')
       }
-      const { data: res } = await this.$http.delete('goods/' + id)
-      this.getGoods() // 小知识点，js的异步与同步，放在底部反而会同步加载导致页面不刷新
-      if (res.code !== 204) {
-        return this.$message.error(res.msg)
-      }
-      this.$message.success(res.msg)
+      this.$api.GoodsDeleteFn(id).then(res => {
+        this.getGoods()
+        if (res.code !== 204) return this.$message.error(res.msg)
+        this.$message.success(res.msg)
+      })
     },
     // 模糊查询（失败...）
     queryContent() {
@@ -290,14 +289,18 @@ export default {
       //   }
       // })
       /**
-       * 
+       *
        * 上面是第一种解决方法，含有严重bug（只能push一条数据）
        * 不得不吐槽下，查阅那么多资料（垃圾某度），甚至都想从API上解决检索问题，
-       * 不曾想ele方法文档就提供了一种解决思路，还体贴的帮你把对象遍历归类到数组当中，可愁死了这两天。
+       * 不曾想ele官方文档就提供了一种解决思路，还体贴的帮你把对象遍历归类到数组当中，可愁死了这两天。
        * 蓦然回首，那人就在灯火阑珊处啊···
        * 好了，继续解决下一个bug了（不能延续检索，必须清除一下才行，这个bug应该挺好解决的吧。。。）
        */
-      let newGoodsData = this.goodsData.filter(data => !this.keywords || data.name.toLowerCase().includes(this.keywords.toLowerCase()))
+      let newGoodsData = this.goodsData.filter(
+        data =>
+          !this.keywords ||
+          data.name.toLowerCase().includes(this.keywords.toLowerCase())
+      )
       this.goodsData = newGoodsData
       this.total = newGoodsData.length
     },
