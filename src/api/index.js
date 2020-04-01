@@ -14,7 +14,9 @@ import {
     adminLogin,
     adminUpdate,
     adminDestroy,
-    goods
+    goods,
+    menus,
+    submenu
 } from './config'
 
 // 请求超时时间
@@ -113,6 +115,24 @@ export default {
             params: {
                 id
             }
+        })
+    },
+    menusListFn () {
+        return new Promise((resolve, reject) => {
+            axios.get(menus).then(res => {
+                resolve(res.data)
+            }).catch(err => {
+                reject(err.data)
+            })
+        })
+    },
+    subMenuListFn () {
+        return new Promise((resolve, reject) => {
+            axios.get(submenu).then(res => {
+                resolve(res.data)
+            }).catch(err => {
+                reject(err.data)
+            })
         })
     },
     /**

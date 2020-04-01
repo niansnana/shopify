@@ -19,12 +19,12 @@
             v-model="userLogin.password"
             placeholder="密码"
             prefix-icon="el-icon-setting"
-            suffix-icon="el-icon-view"
+            :show-password="true"
             type="password"
           ></el-input>
         </el-form-item>
         <el-form-item>
-          <p>尚未完成，跳往<a href="/admin/index">后台</a></p>
+          <el-button type="text" @click="open">尚未完成</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="login">登录</el-button>
@@ -45,7 +45,16 @@ export default {
         username: '',
         password: ''
       },
-      userLoginRules: {}
+      userLoginRules: {
+        username: [
+          { required: true, message: '用户名不能为空', trigger: 'blur' },
+          { min: 2, max: 16, message: '长度在 2 到 16 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '密码不能为空', trigger: 'blur' },
+          { min: 2, max: 16, message: '长度在 2 到 16 个字符', trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
@@ -53,6 +62,20 @@ export default {
       // 登录验证
       this.$api.userLoginFn(this.userLogin).then(res => {
         const result = res.data.data
+        for (let i in result) {
+          if (
+            this.userLogin.username == result[i].username &&
+            this.userLogin.password == result[i].password
+          ) {
+            // window.localStorage.setItem('token', result.remember_token)
+            this.$router.push('/admin/index')
+          }
+        }
+      })
+    },
+    open() {
+      this.$alert('由于后台接口尚未返回token，故不设权限验证，默认账号密码为admin', '登录提示', {
+        confirmButtonText: '确定'
       })
     }
   }

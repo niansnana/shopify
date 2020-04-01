@@ -12,6 +12,10 @@ export const adminLogin = api + 'admin/login'
 export const adminUpdate = api + 'admin/update'    // 更新管理员
 export const adminDestroy = api + 'admin/delete'    // 删除管理员
 
+// ===================菜单管理
+export const menus = api + 'menus'
+export const submenu = api + 'submenu'
+
 // ===================商品管理
 export const goods = api + 'goods'
 

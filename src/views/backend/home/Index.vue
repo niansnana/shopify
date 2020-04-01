@@ -41,7 +41,12 @@
               @click="toggleCollapse"
               :icon="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
             ></el-button>
-            <el-button type="text" icon="el-icon-refresh" title="刷新当前页面" @click="refreshCurrentPage"></el-button>
+            <el-button
+              type="text"
+              icon="el-icon-refresh"
+              title="刷新当前页面"
+              @click="refreshCurrentPage"
+            ></el-button>
           </el-col>
           <el-col :span="2" :offset="20">
             <i class="el-icon-bell"></i>
@@ -84,22 +89,30 @@ export default {
     toggleCollapse() {
       this.isCollapse = !this.isCollapse
     },
-    async getMenus() {
-      const { data: resM } = await this.$http.get('menus')
-      const { data: resS } = await this.$http.get('submenu')
-      this.menuList = resM.data
-      this.subMenus = resS.data
+    // async getMenus() {
+    //   const { data: resM } = await this.$http.get('menus')
+    //   const { data: resS } = await this.$http.get('submenu')
+    //   this.menuList = resM.data
+    //   this.subMenus = resS.data
+    // },
+    getMenus() {
+      this.$api.menusListFn().then(res => {
+        this.menuList = res.data
+      })
+      this.$api.subMenuListFn().then(res => {
+        this.subMenus = res.data
+      })
     },
     savaActivePath(activePath) {
       window.sessionStorage.setItem('activePath', activePath)
       this.activePath = activePath
     },
     // 刷新当然路由页面
-    refreshCurrentPage(){
+    refreshCurrentPage() {
       this.$router.go(0)
     },
     // 退出登录
-    logout(){
+    logout() {
       this.$router.push('/admin')
     }
   }
